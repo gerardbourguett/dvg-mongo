@@ -5,6 +5,7 @@ const {
   putSvg,
   deleteSvg,
   getOneSvg,
+  pingIp,
 } = require("./controllers");
 const router = express.Router();
 
@@ -17,5 +18,7 @@ router.post("/svg", postSvg);
 router.put("/svg/:id", putSvg);
 
 router.delete("/svg/:id", deleteSvg);
+
+router.get("/ping", pingIp);
 
 module.exports = router;

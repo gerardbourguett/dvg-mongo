@@ -1,4 +1,5 @@
 const Svg = require("./models");
+const ping = require("ping");
 
 const getSvg = async (req, res) => {
   try {
@@ -70,4 +71,25 @@ const deleteSvg = async (req, res) => {
   }
 };
 
-module.exports = { getSvg, getOneSvg, postSvg, putSvg, deleteSvg };
+const pingIp = async (req, res) => {
+  //Obtener todos los ip_address de la base de datos
+  const svgs = await Svg.find();
+  const ips = svgs.map((svg) => svg.ip_address);
+  console.log(ips);
+  //Recorrer todos los ip_address de la base de datos y hacer ping a cada uno
+  const response = [];
+  ips.forEach(async (ip) => {
+    await ping.sys.probe(ip, (isAlive) => {
+      if (isAlive) {
+        const resAlive = `IP ${ip} is alive`;
+        response.push(resAlive);
+      } else {
+        const resDead = `IP ${ip} is dead`;
+        response.push(resDead);
+      }
+    });
+    return res.json(response);
+  });
+};
+
+module.exports = { getSvg, getOneSvg, postSvg, putSvg, deleteSvg, pingIp };
