@@ -41,12 +41,20 @@ function dragEnded(event, d) {
   let cy = d3.select(this).attr("cy");
   let description = d3.select(this).attr("description");
   let ip_address = d3.select(this).attr("ip_address");
+  let ip_status = d3.select(this).attr("ip_status");
 
   let circleId = d3.select(this).attr("id");
-  updateCirclePosition(circleId, cx, cy, description, ip_address);
+  updateCirclePosition(circleId, cx, cy, description, ip_address, ip_status);
 }
 
-function updateCirclePosition(circleId, cx, cy, description, ip_address) {
+function updateCirclePosition(
+  circleId,
+  cx,
+  cy,
+  description,
+  ip_address,
+  ip_status
+) {
   fetch(`/api/svg/${circleId}`, {
     method: "PUT",
     headers: {
@@ -57,6 +65,7 @@ function updateCirclePosition(circleId, cx, cy, description, ip_address) {
       cy: cy,
       description: description,
       ip_address: ip_address,
+      ip_status: ip_status,
     }),
   })
     .then((response) => response.json())
@@ -65,7 +74,7 @@ function updateCirclePosition(circleId, cx, cy, description, ip_address) {
     });
 }
 
-function addCircle(id, cx, cy, r, fill, description, ip_address) {
+function addCircle(id, cx, cy, r, fill, description, ip_address, ip_status) {
   pointsGroup
     .append("circle")
     .attr("id", id)
@@ -75,13 +84,14 @@ function addCircle(id, cx, cy, r, fill, description, ip_address) {
     .attr("fill", fill)
     .attr("description", description)
     .attr("ip_address", ip_address)
+    .attr("ip_status", ip_status)
     .call(drag)
     .on("click", function () {
       // Rellena y abre el modal con los datos del círculo
       document.getElementById("circle-id").innerText = id;
       document.getElementById("circle-position").innerText = `(${cx}, ${cy})`;
-      document.getElementById("circle-radius").innerText = r;
-      document.getElementById("circle-fill").innerText = fill;
+      document.getElementById("circle-ip").innerText = ip_address;
+      document.getElementById("circle-status").innerText = ip_status;
       document.getElementById("circle-description").innerText = description;
       let myModal = new bootstrap.Modal(document.getElementById("circleModal"));
       myModal.show();
@@ -101,7 +111,8 @@ async function loadCircles() {
           circle.r,
           circle.fill,
           circle.description,
-          circle.ip_address
+          circle.ip_address,
+          circle.ip_status
         );
       });
     }
@@ -135,6 +146,7 @@ if (document.getElementById("lines")) {
       let y = currentCoords[1];
       let r = 10;
       let fill = "blue";
+      let ip_status = false;
       let description = document.getElementById("descriptionInput").value;
       let ip_address = document.getElementById("ipInput").value;
 
@@ -151,6 +163,7 @@ if (document.getElementById("lines")) {
           fill: fill,
           description: description,
           ip_address: ip_address,
+          ip_status: ip_status,
         }),
       })
         .then((response) => {
@@ -168,7 +181,6 @@ if (document.getElementById("lines")) {
           console.error("Error:", error);
         });
     });
-
   circle.on("mousemove", function (event) {
     var coords = d3.pointer(event);
     var x = coords[0];

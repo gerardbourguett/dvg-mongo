@@ -11,13 +11,18 @@
       crossorigin="anonymous"
     />
     <script src="https://d3js.org/d3.v7.min.js"></script>
+    <!-- Incluyendo Popper.js y Tippy.js -->
+    <script src="https://unpkg.com/@popperjs/core@2/dist/umd/popper.min.js"></script>
+    <script src="https://unpkg.com/tippy.js@6/dist/tippy-bundle.umd.js"></script>
   </head>
   <body>
     <div class="container">
       <p>
         Move Mouse Over Shape <span id="txt" style="font-weight: bold"></span>
       </p>
-
+      <button type="button" class="btn btn-success" id="btn">
+        Realizar Ping
+      </button>
       <!-- Modal -->
       <div
         class="modal fade"
@@ -157,10 +162,10 @@
             <div class="modal-body">
               <p><strong>ID:</strong> <span id="circle-id"></span></p>
               <p>
-                <strong>Position:</strong> <span id="circle-position"></span>
+                <strong>Posiciónn:</strong> <span id="circle-position"></span>
               </p>
-              <p><strong>Radius:</strong> <span id="circle-radius"></span></p>
-              <p><strong>Fill:</strong> <span id="circle-fill"></span></p>
+              <p><strong>IP:</strong> <span id="circle-ip"></span></p>
+              <p><strong>Status:</strong> <span id="circle-status"></span></p>
               <p>
                 <strong>Description:</strong>
                 <span id="circle-description"></span>
@@ -174,12 +179,11 @@
       </div>
     </div>
 
-    <script src="script.js"></script>
+    <script type="module" src="script.js"></script>
     <script
       src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
       integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
       crossorigin="anonymous"
     ></script>
-    <script></script>
   </body>
 </html>

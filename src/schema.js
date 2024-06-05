@@ -29,6 +29,10 @@ const svgSchema = new mongoose.Schema({
     type: String,
     required: false,
   },
+  ip_status: {
+    type: Boolean,
+    required: false,
+  },
   createdAt: {
     type: Date,
     default: Date.now,
