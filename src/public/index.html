@@ -56,6 +56,67 @@
         </div>
       </div>
 
+      <!-- Modal para agregar IP y descripción -->
+      <div
+        class="modal fade"
+        id="addDetailsModal"
+        tabindex="-1"
+        aria-labelledby="addDetailsModalLabel"
+        aria-hidden="true"
+      >
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h1 class="modal-title fs-5" id="addDetailsModalLabel">
+                Detalles
+              </h1>
+              <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="modal"
+                aria-label="Close"
+              ></button>
+            </div>
+            <div class="modal-body">
+              <form id="detailsForm">
+                <div class="mb-3">
+                  <label for="ipInput" class="form-label">IP</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="ipInput"
+                    required
+                  />
+                </div>
+                <div class="mb-3">
+                  <label for="descriptionInput" class="form-label"
+                    >Descripción</label
+                  >
+                  <textarea
+                    class="form-control"
+                    id="descriptionInput"
+                    rows="3"
+                    required
+                  ></textarea>
+                </div>
+              </form>
+            </div>
+            <div class="modal-footer">
+              <button
+                type="button"
+                class="btn btn-secondary"
+                data-bs-dismiss="modal"
+              >
+                Cancelar
+              </button>
+              <button type="button" class="btn btn-primary" id="saveDetailsBtn">
+                Guardar Punto
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <div class="original-mapa">
         <svg
           version="1.1"
@@ -119,26 +180,6 @@
       integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
       crossorigin="anonymous"
     ></script>
-    <script>
-      document.addEventListener("DOMContentLoaded", function () {
-        fetch("paths.html")
-          .then((response) => response.text())
-          .then((data) => {
-            document.getElementById("lines").innerHTML = data;
-
-            // Agregar interactividad con D3.js después de que el contenido ha sido cargado
-            d3.selectAll("#svg g#lines path")
-              .on("mouseover", function (event) {
-                d3.select("#txt").text(" - Path Hovered");
-              })
-              .on("mouseout", function (event) {
-                d3.select("#txt").text("");
-              });
-          })
-          .catch((error) =>
-            console.error("Error loading the SVG paths:", error)
-          );
-      });
-    </script>
+    <script></script>
   </body>
 </html>

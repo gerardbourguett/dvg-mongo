@@ -1,4 +1,21 @@
-// Archivo script.js
+document.addEventListener("DOMContentLoaded", function () {
+  fetch("paths.html")
+    .then((response) => response.text())
+    .then((data) => {
+      document.getElementById("lines").innerHTML = data;
+
+      // Agregar interactividad con D3.js después de que el contenido ha sido cargado
+      d3.selectAll("#svg g#lines path")
+        .on("mouseover", function (event) {
+          d3.select("#txt").text(" - Path Hovered");
+        })
+        .on("mouseout", function (event) {
+          d3.select("#txt").text("");
+        });
+    })
+    .catch((error) => console.error("Error loading the SVG paths:", error));
+});
+
 let pointsGroup = d3.select("#points");
 
 let drag = d3
@@ -22,18 +39,25 @@ function dragged(event, d) {
 function dragEnded(event, d) {
   let cx = d3.select(this).attr("cx");
   let cy = d3.select(this).attr("cy");
+  let description = d3.select(this).attr("description");
+  let ip_address = d3.select(this).attr("ip_address");
 
   let circleId = d3.select(this).attr("id");
-  updateCirclePosition(circleId, cx, cy, description);
+  updateCirclePosition(circleId, cx, cy, description, ip_address);
 }
 
-function updateCirclePosition(circleId, cx, cy, description) {
-  fetch(`/svg/${circleId}`, {
+function updateCirclePosition(circleId, cx, cy, description, ip_address) {
+  fetch(`/api/svg/${circleId}`, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ cx: cx, cy: cy, description: description }),
+    body: JSON.stringify({
+      cx: cx,
+      cy: cy,
+      description: description,
+      ip_address: ip_address,
+    }),
   })
     .then((response) => response.json())
     .then((data) => {
@@ -41,7 +65,7 @@ function updateCirclePosition(circleId, cx, cy, description) {
     });
 }
 
-function addCircle(id, cx, cy, r, fill, description) {
+function addCircle(id, cx, cy, r, fill, description, ip_address) {
   pointsGroup
     .append("circle")
     .attr("id", id)
@@ -50,6 +74,7 @@ function addCircle(id, cx, cy, r, fill, description) {
     .attr("r", r)
     .attr("fill", fill)
     .attr("description", description)
+    .attr("ip_address", ip_address)
     .call(drag)
     .on("click", function () {
       // Rellena y abre el modal con los datos del círculo
@@ -65,7 +90,7 @@ function addCircle(id, cx, cy, r, fill, description) {
 
 async function loadCircles() {
   try {
-    const response = await fetch("/svg");
+    const response = await fetch("/api/svg");
     const data = await response.json();
     if (data.svgs) {
       data.svgs.forEach((circle) => {
@@ -75,7 +100,8 @@ async function loadCircles() {
           circle.cy,
           circle.r,
           circle.fill,
-          circle.description
+          circle.description,
+          circle.ip_address
         );
       });
     }
@@ -89,42 +115,59 @@ window.onload = loadCircles();
 
 if (document.getElementById("lines")) {
   let circle = d3.select("svg");
+  let addDetailsModal;
+  let currentCoords = [];
+
   circle.on("dblclick", function (event) {
     let coords = d3.pointer(event);
-    let x = coords[0];
-    let y = coords[1];
-    let r = 15;
-    let fill = "red";
-    let description = "Hola";
+    currentCoords = coords;
 
-    fetch("/svg", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        type: "circle",
-        cx: x,
-        cy: y,
-        r: r,
-        fill: fill,
-        description: description,
-      }),
-    })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        return response.json();
-      })
-      .then((data) => {
-        addCircle(data.svg._id, x, y, r, fill, description);
-        console.log("Success:", data.svg);
-      })
-      .catch((error) => {
-        console.error("Error:", error);
-      });
+    addDetailsModal = new bootstrap.Modal(
+      document.getElementById("addDetailsModal")
+    );
+    addDetailsModal.show();
   });
+
+  document
+    .getElementById("saveDetailsBtn")
+    .addEventListener("click", function () {
+      let x = currentCoords[0];
+      let y = currentCoords[1];
+      let r = 10;
+      let fill = "blue";
+      let description = document.getElementById("descriptionInput").value;
+      let ip_address = document.getElementById("ipInput").value;
+
+      fetch("/api/svg", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          type: "circle",
+          cx: x,
+          cy: y,
+          r: r,
+          fill: fill,
+          description: description,
+          ip_address: ip_address,
+        }),
+      })
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+          return response.json();
+        })
+        .then((data) => {
+          addCircle(data.svg._id, x, y, r, fill, description, ip_address);
+          console.log("Success:", data.svg);
+          addDetailsModal.hide();
+        })
+        .catch((error) => {
+          console.error("Error:", error);
+        });
+    });
 
   circle.on("mousemove", function (event) {
     var coords = d3.pointer(event);
