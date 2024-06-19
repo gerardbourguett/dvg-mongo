@@ -21,12 +21,8 @@ const getOneSvg = async (req, res) => {
 
 const postSvg = async (req, res) => {
   try {
-    const { cx, cy, r, fill, description, type, ip_address, ip_status } =
-      req.body;
-    if (
-      (!cx,
-      !cy || !r || !fill || !description || !type || !ip_address || !ip_status)
-    ) {
+    const { cx, cy, r, fill, description, type, ip_address } = req.body;
+    if ((!cx, !cy || !r || !fill || !description || !type || !ip_address)) {
       return res.status(400).json({ message: "Please provide both cx and cy" });
     }
 
@@ -38,7 +34,7 @@ const postSvg = async (req, res) => {
       description,
       type,
       ip_address,
-      ip_status,
+      ip_status: false,
     });
     const save = await newSvg.save();
     return res.json({ svg: save });

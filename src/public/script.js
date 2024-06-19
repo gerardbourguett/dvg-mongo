@@ -1,10 +1,15 @@
+const socket = io();
+
+socket.on("ping", async (ip) => {
+  socket.emit("pong");
+});
+
 document.addEventListener("DOMContentLoaded", function () {
   fetch("paths.html")
     .then((response) => response.text())
     .then((data) => {
       document.getElementById("lines").innerHTML = data;
 
-      // Agregar interactividad con D3.js después de que el contenido ha sido cargado
       d3.selectAll("#svg g#lines path")
         .on("mouseover", function (event) {
           d3.select("#txt").text(" - Path Hovered");
@@ -87,7 +92,6 @@ function addCircle(id, cx, cy, r, fill, description, ip_address, ip_status) {
     .attr("ip_status", ip_status)
     .call(drag)
     .on("click", function () {
-      // Rellena y abre el modal con los datos del círculo
       document.getElementById("circle-id").innerText = id;
       document.getElementById("circle-position").innerText = `(${cx}, ${cy})`;
       document.getElementById("circle-ip").innerText = ip_address;
@@ -146,9 +150,11 @@ if (document.getElementById("lines")) {
       let y = currentCoords[1];
       let r = 10;
       let fill = "blue";
-      let ip_status = false;
+      const ip_status = false;
       let description = document.getElementById("descriptionInput").value;
       let ip_address = document.getElementById("ipInput").value;
+
+      console.log(x, y, r, fill, description, ip_address, ip_status);
 
       fetch("/api/svg", {
         method: "POST",
